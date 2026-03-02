@@ -1,1 +1,43 @@
+name: Deploy yolo.ai Website
 
+on:
+  push:
+    branches:
+      - main   # change if your branch name is different
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Get repository files
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Setup GitHub Pages
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # 3️⃣ Upload website files
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./   # root folder containing index.html
+
+      # 4️⃣ Deploy website
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
